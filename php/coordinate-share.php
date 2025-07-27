@@ -34,10 +34,10 @@ function haversine($coord1, $coord2)
 // POST-Request: Store GPS coordinate
 if ($_SERVER['REQUEST_METHOD'] === 'POST')
 {
-    if (!isset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) ||
-        $_SERVER['PHP_AUTH_USER'] !== $credentials["post_user"]["username"] ||
-        $_SERVER['PHP_AUTH_PW'] !== $credentials["post_user"]["password"])
+    if (!isset($_GET['token']) ||
+        $_GET['token'] !== $credentials["post_token"])
     {
+        file_put_contents('restricted/log.txt', 'Unauthorized: ' . $_GET['token']);
             header('HTTP/1.0 401 Unauthorized');
             echo "ERROR: Unauthorized";
             exit;
@@ -53,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             'longitude' => $gps_lon,
             'timestamp' => time(),
         ];
+        file_put_contents('restricted/log.txt', 'Saved');
 
         file_put_contents('restricted/coordinates.json', json_encode($data));
 
@@ -61,17 +62,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     }
     else
     {
+        file_put_contents('restricted/log.txt', 'No coordinates');
         echo "ERROR: No coordinates provided.";
         exit;
     }
 }
 
+
 // GET-Request: Get distance to reference point
 if ($_SERVER['REQUEST_METHOD'] === 'GET')
 {
-    if (!isset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) ||
-        $_SERVER['PHP_AUTH_USER'] !== $credentials["get_user"]["username"] ||
-        $_SERVER['PHP_AUTH_PW'] !== $credentials["get_user"]["password"])
+    if (!isset($_GET['token']) ||
+        $_GET['token'] !== $credentials["get_token"])
     {
         header('HTTP/1.0 401 Unauthorized');
         echo "ERROR: Unauthorized";
