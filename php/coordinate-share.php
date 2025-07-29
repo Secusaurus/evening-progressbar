@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET')
         $_GET['token'] !== $credentials["get_token"])
     {
         header('HTTP/1.0 401 Unauthorized');
-        echo "ERROR: Unauthorized";
+        echo "-1\nERROR: Unauthorized";
         exit;
     }
 
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET')
         // Only return distance if the data is not older than 2 hours (7200 seconds)
         if ($time_diff > 7200)
         {
-            echo "ERROR: Last update is too old.";
+            echo "-1\nERROR: Last update is too old.";
             exit;
         }
         else
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET')
             exit;
         }
     } else {
-        echo "ERROR: No saved coordinates.";
+        echo "-1\nERROR: No saved coordinates.";
         exit;
     }
 }
