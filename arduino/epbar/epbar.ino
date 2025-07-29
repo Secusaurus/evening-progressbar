@@ -229,7 +229,7 @@ void paintFromCenter(int numPixels, int centerCol[], int borderCol[])
 */
 void colorizeCenter()
 {
-  uint32_t col = strip.ColorHSV((millis()) % 65535, 255, 255);
+  uint32_t col = strip.ColorHSV((millis() / 3) % 65535, 255, 255);
 
   centerColor[0] = (col >> 16) & 0xFF;
   centerColor[1] = (col >> 8) & 0xFF;
@@ -339,7 +339,7 @@ void wifiConnect()
     paintFromCenter(retrys, red, red);
     retrys++;
 
-    delay(1000);
+    delay(1500);
   }
 
   if (WiFi.status() == WL_CONNECTED)
@@ -352,7 +352,7 @@ void wifiConnect()
     {
       paintFromCenter(retrys, green, green);
       retrys++;
-      delay(20);
+      delay(15);
     }
 
     step = 1;
@@ -364,7 +364,7 @@ void wifiConnect()
     {
       paintFromCenter(retrys, red, red);
       retrys++;
-      delay(20);
+      delay(15);
     }
 
     step = 2;
@@ -502,6 +502,7 @@ void nextStep()
 {
   Serial.println("Proceeding to next step!");
   wipeOut(20);
+  strip.setBrightness(255);
   rainbow(5);
 
   stepStartTime = millis();
@@ -519,6 +520,8 @@ void nextStep()
       step = 2;
     }
   }
+  
+  strip.setBrightness(brightness);
 
   centerPercent =  (step - 1) / ((totalSteps - 1) * 1.0);
   wipeInCenter(50);
@@ -537,7 +540,7 @@ void setup()
 
   strip.begin();
   strip.show();
-  strip.setBrightness(brightness);
+  strip.setBrightness(255);
 
   wifiConnect();
 }
@@ -570,6 +573,7 @@ void loop()
 
 
   // Draw constantly
+  strip.setBrightness(brightness);
   if (step == 1)
   {
     paintDistance();
