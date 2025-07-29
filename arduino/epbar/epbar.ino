@@ -1,6 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
+#include "config.h"
 
 #define STRIP_CONTROL D8
 #define BUTTON_PIN D3
@@ -20,32 +21,6 @@ float stepStartTime = 0;
 int step = 1;
 
 
-
-
-
-/* ## INSERT CUSTOM INFORMATION HERE ## */
-
-// WiFi configuration
-const char* ssid = "***";
-const char* password = "***";
-
-// URL with token
-const char* url = "***";
-
-const float largestDistance = 40.0;
-
-const int stripLeftLEDCount = 15;
-const int stripCenterLEDCount = 22;
-const int stripRightLEDCount = 15;
-
-const int totalSteps = 5;
-
-const float stepDurationSec[] = { 0, 30, 60, 120, 120 };
-
-
-/* ## DO NOT TOUCH ANYTHING BELOW HERE ## */
-
-
 Adafruit_NeoPixel strip(stripLeftLEDCount + stripCenterLEDCount + stripRightLEDCount, STRIP_CONTROL, NEO_GRB + NEO_KHZ800);
 HTTPClient sender;
 WiFiClientSecure wifiClient;
@@ -53,7 +28,7 @@ WiFiClientSecure wifiClient;
 
 void paint()
 {
-  Serial.println("Painting: Left: " + String(leftPercent) + " /  Center: " + String(centerPercent) + " / Right: " + String(rightPercent));
+  //Serial.println("Painting: Left: " + String(leftPercent) + " /  Center: " + String(centerPercent) + " / Right: " + String(rightPercent));
 
 
   // start by switching all off
@@ -92,30 +67,53 @@ void paint()
 }
 
 
+void paintFromCenter(int numPixels, int centerCol[], int borderCol[])
+{
+  strip.clear();
+
+  int centerPos = (stripLeftLEDCount + stripCenterLEDCount + stripRightLEDCount) / 2;
+  Serial.println("Setting pixel " + String(numPixels));
+
+  for (int px = 0; px < numPixels; px++)
+  {
+    if (centerPos + px < stripLeftLEDCount + stripCenterLEDCount + stripRightLEDCount)
+    {
+      int mixColorR = int(((px * 1.0 / numPixels) * centerCol[0]) + ((1.0 - (px * 1.0 / numPixels)) * borderCol[0]));
+      int mixColorG = int(((px * 1.0 / numPixels) * centerCol[1]) + ((1.0 - (px * 1.0 / numPixels)) * borderCol[1]));
+      int mixColorB = int(((px * 1.0 / numPixels) * centerCol[2]) + ((1.0 - (px * 1.0 / numPixels)) * borderCol[2]));
+
+      strip.setPixelColor(centerPos + px, strip.Color(mixColorR, mixColorG, mixColorB));
+      strip.setPixelColor(centerPos - px, strip.Color(mixColorR, mixColorG, mixColorB));
+    }
+  }
+
+  strip.show();
+
+}
+
+
 
 
 void wifiConnect()
 {
   WiFi.begin(ssid, password);
   int retrys = 0;
-  
-  leftColor[0] = 255; leftColor[1] = 180; leftColor[2] = 0;
-  rightColor[0] = 255; rightColor[1] = 180; rightColor[2] = 0;
-  centerColor[0] = 255; centerColor[1] = 0; centerColor[2] = 0;
-  leftPercent = 0.5;
-  rightPercent = 0.5;
-  centerPercent = 1;
-  paint();
+  int red[] = {255, 0, 0};
+  int green[] = {0, 255, 0};
+
+  paintFromCenter(1, red, red);
 
   
   Serial.print("Connecting to WiFi " + String(ssid));
 
-  while (WiFi.status() != WL_CONNECTED && retrys < 300)
+  while (WiFi.status() != WL_CONNECTED && retrys < (stripLeftLEDCount + stripCenterLEDCount + stripRightLEDCount) / 2)
   {
-
-    delay(200);
     Serial.print(".");
+    
+    paintFromCenter(retrys, red, red);
     retrys++;
+
+    delay(1000);
   }
 
   if (WiFi.status() == WL_CONNECTED)
@@ -124,12 +122,29 @@ void wifiConnect()
 
     wifiClient.setInsecure();
 
+    while (retrys < (stripLeftLEDCount + stripCenterLEDCount + stripRightLEDCount) / 2)
+    {
+      paintFromCenter(retrys, green, green);
+      retrys++;
+      delay(20);
+    }
+
     step = 1;
   } else
   {
     Serial.println("WiFi connection failed!");
+    
+    while (retrys < (stripLeftLEDCount + stripCenterLEDCount + stripRightLEDCount) / 2)
+    {
+      paintFromCenter(retrys, red, red);
+      retrys++;
+      delay(20);
+    }
+
     step = 2;
   }
+
+  Serial.println("Entering main loop");
   
 }
 

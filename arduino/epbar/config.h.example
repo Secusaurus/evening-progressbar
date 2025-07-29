@@ -1,0 +1,24 @@
+// config.h
+#ifndef CONFIG_H
+#define CONFIG_H
+
+
+// WiFi configuration
+const char* ssid = "***";
+const char* password = "***";
+
+// URL with token
+const char* url = "***/coordinate-share.php?token=abc123";
+
+const float largestDistance = 40.0;
+
+const int stripLeftLEDCount = 15;
+const int stripCenterLEDCount = 22;
+const int stripRightLEDCount = 15;
+
+const int totalSteps = 5;
+
+const float stepDurationSec[] = { 0, 30, 60, 120, 120 };
+
+
+#endif

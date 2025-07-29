@@ -31,4 +31,6 @@ PHP:
 - Upload all files to your webserver (make sure you include `.htaccess`!)
 
 Arduino:
-- In the first few lines, you need to configure all required parameters
+- (tbd: required libraries)
+- Copy `config.h.example` to `config.h` and configure all your parameters
+- Build!
