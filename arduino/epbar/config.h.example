@@ -4,23 +4,34 @@
 
 
 // WiFi configuration
+/* SSID for WiFi */
 const char* ssid = "***";
+/* Password for WiFi */
 const char* password = "***";
 
 // URL with token
+/* URL with token to get current distance */
 const char* url = "***/coordinate-share.php?token=abc123";
 
+/* Maximum distance */
 const float largestDistance = 40.0;
 
+/* Number of LEDs for left part of the strip */
 const int stripLeftLEDCount = 15;
+/* Number of LEDs for center part of the strip */
 const int stripCenterLEDCount = 22;
+/* Number of LEDs for right part of the strip */
 const int stripRightLEDCount = 15;
 
+/* Number of steps (including distance tracking) */
 const int totalSteps = 5;
 
-const float stepDurationSec[] = { 0, 30, 60, 120, 120 };
+/* Duration of steps */
+const float stepDurationSec[] = { 0, 30, 15 * 60, 15 * 60, 10 * 60 };
+// Watch out: Length of this array must match the number of totalSteps
+// First value is ignored, since the first step is the distance calculation
 
-
+/* Targeted brightness for the bar (while not animating) */
 const int brightness = 125;
 
 #endif
