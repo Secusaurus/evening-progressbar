@@ -21,4 +21,6 @@ const int totalSteps = 5;
 const float stepDurationSec[] = { 0, 30, 60, 120, 120 };
 
 
+const int brightness = 125;
+
 #endif
